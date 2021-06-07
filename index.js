@@ -13,6 +13,7 @@ const mongoose = require("mongoose");
 //khai báo router api để sử dụng
 const userRouter = require("./routes/users");
 const userAuth = require("./routes/auth");
+const postRouter = require("./routes/posts")
 
 mongoose.connect(
     process.env.MONGO_URL, 
@@ -36,7 +37,7 @@ app.use(morgan("common"))
 
 app.use("/api/users", userRouter);
 app.use("/api/auth", userAuth);
-
+app.use("/api/posts", postRouter);
 
 
 

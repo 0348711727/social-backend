@@ -19,9 +19,7 @@ router.put("/:id", async (req, res)=>{
         }
         try
         {
-            const user = await UserModel.findByIdAndUpdate(req.params.id, {
-                $set: req.body,
-            })
+            const user = await UserModel.findByIdAndUpdate(req.params.id, { $set: req.body })
             res.status(200).json("Tài khoản đã được cập nhật")
         }
         catch(err)
@@ -118,7 +116,7 @@ router.put("/:id/unfollow", async (req, res)=>{
             }
             else
             {
-                res.status(403).json("Bạn đã chưa theo dõi người dùng này");
+                res.status(403).json("Follow trước đã rồi unfollow nhé :)");
             }
         }
         catch(err)
