@@ -48,7 +48,7 @@ router.delete("/:id", async (req, res)=>{
             res.status(500).json(err)
         }
 })
-//like a post
+//like/dislike a post
 router.put("/:id/like", async (req, res)=>{
     try {
         const newPost = await PostModel.findById(req.params.id);
@@ -77,20 +77,32 @@ router.get("/:id", async (req, res)=>{
 })
 
 //get timeline post
-router.get("/timeline/all", async (req, res)=>{
+router.get("/timeline/:userId", async (req, res)=>{
     try {
-        const currentUser = UserModel.findById(req.body.userId);
-        const userPosts = PostModel.find({userId: currentUser._id});
-        const friendPosts = Promise.all(
-            currentUser.followings.map(friendId =>{
-                PostModel.find({userId: friendId})
+        const currentUser = await UserModel.findById(req.params.userId);
+        const userPosts = await PostModel.find({userId: currentUser._id});
+        const friendPosts = await Promise.all(
+            currentUser.followings.map((friendId) =>{
+                return PostModel.find({userId: friendId})
             })
         )
-        res.json(userPosts.concat(...friendPosts));
-    } catch (error) {
+        res.status(200).json({posts : userPosts.concat(...friendPosts)});
+        // res.status(200).json(userPosts.concat(...friendPosts));
+        // res.status(200).json({posts: [...userPosts, ...friendPosts]});
+    } catch (err) {
         res.status(500).json(err)
     }
 })
 
+//get all user's post
+router.get("/profile/:username", async (req, res)=>{
+    try {
+        const user = await UserModel.findOne({ username: req.params.username });
+        const posts = await PostModel.find({ userId: user._id })
+        res.status(200).json({posts: posts});
+    } catch (err) {
+        res.status(500).json(err)
+    }
+})
 
 module.exports = router;

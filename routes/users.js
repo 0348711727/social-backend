@@ -52,11 +52,15 @@ router.delete("/:id", async (req, res)=>{
     }
 }) 
 //get a user
-router.get("/:id", async (req, res)=>{
+router.get("/", async (req, res)=>{
+    const userId = req.query.userId; //localhost:5000/users?userId = 1234546787300
+    const username = req.query.username;//localhost:5000/users?username = "QUAssNG" 
     try{
-        const user = await UserModel.findById(req.params.id);
+        const user = userId
+        ? await UserModel.findById(userId) 
+        : await UserModel.findOne({username});
         const {password, updatedAt, ...other} = user._doc;
-
+        // return res.json({user});
         res.status(200).json(other);
     }
     catch(err){
@@ -130,6 +134,26 @@ router.put("/:id/unfollow", async (req, res)=>{
     }
 })
 
+//get user's friends
+router.get("/friends/:userId", async (req, res)=>{
+    let friendList = [];
+    try {
+        const user = await UserModel.findById(req.params.userId);
+        const friends = await Promise.all(
+            user.followings.map(friendId =>{
+                return UserModel.findById(friendId)
+            })
+        )
+        friends.map((friend) =>{
+            // return {_id, username, profilePicture}
+            const { _id, username, profilePicture } = friend;
+            friendList.push({ _id, username, profilePicture })
+        })
+        res.status(200).json({friendList})
+        } catch (error) {
+        res.status(500).json(error);
+    }
+})
 router.get('/', (req,res)=>{
     res.send("Đây là router user")
 })

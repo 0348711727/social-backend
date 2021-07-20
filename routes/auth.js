@@ -23,6 +23,8 @@ router.post('/register', async (req,res)=>{
 
 router.post("/login", async (req, res)=>{
     try{
+
+        console.log(req.body.email);
         //kiểm tra email
         const user = await UserModel.findOne({ email: req.body.email });
         !user && res.status(404).json("Không tìm thấy người dùng");//nếu vế trước đúng thì chạy vế sau &&
@@ -31,6 +33,8 @@ router.post("/login", async (req, res)=>{
         const validPassword = await bcrypt.compare(req.body.password, user.password) ;
         !validPassword && res.status(404).json("Sai mật khẩu");
         
+        
+
         //thành công trả về user ở json
         res.status(200).json(user);
     }   
