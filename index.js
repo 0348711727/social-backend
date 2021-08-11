@@ -1,15 +1,20 @@
 const express = require("express");
 const app = express();
-
+const cors = require("cors");
 //mở api
-app.use((req, res, next)=>{
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, context-type');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next();
-});
+// app.use((req, res, next)=>{
+//     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, context-type');
+//     res.setHeader('Access-Control-Allow-Credentials', true);
+//     next();
+// });
 
+const corsOptions = {
+    origin: "http://localhost:3000", 
+    methods: ['POST', 'PUT'],
+    userCredential: true,
+}
 const dotenv = require("dotenv");
 dotenv.config();// phải gọi dotenv trước mới chạy connect mongoose.connect dưới được
 //khai báo các thư viện
@@ -47,6 +52,7 @@ app.use("/images", express.static(path.join(__dirname, "public/images")));
 app.use(express.json());
 app.use(helmet());
 app.use(morgan("common"))
+app.use(cors(corsOptions))
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) =>{
